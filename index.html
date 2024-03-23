@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="calculator">
+        <div class="output">
+          <div data-previous-operand class="previous-operand"></div>
+          <div data-current-operand class="current-operand"></div>
+        </div>
+        <button data-all-clear class="span-two">AC</button>
+        <button data-delete>DEL</button>
+        <button data-operation>÷</button>
+        <button data-number>1</button>
+        <button data-number>2</button>
+        <button data-number>3</button>
+        <button data-operation>*</button>
+        <button data-number>4</button>
+        <button data-number>5</button>
+        <button data-number>6</button>
+        <button data-operation>+</button>
+        <button data-number>7</button>
+        <button data-number>8</button>
+        <button data-number>9</button>
+        <button data-operation>-</button>
+        <button data-number>.</button>
+        <button data-number>0</button>
+        <button data-equals class="span-two">=</button>
+      </div>
+      <script>
+        const output = document.querySelector('.output');
+const previousOperand = output.querySelector('[data-previous-operand]');
+const currentOperand = output.querySelector('[data-current-operand]');
+const buttons = document.querySelectorAll('button');
+
+let currentNumber = '';
+let previousNumber = '';
+let operation = null;
+
+const updateDisplay = () => {
+  currentOperand.textContent = currentNumber;
+  if (previousNumber !== '') {
+    previousOperand.textContent = `${previousNumber} ${operation}`;
+  } else {
+    previousOperand.textContent = '';
+  }
+};
+
+const clearDisplay = () => {
+  currentNumber = '';
+  previousNumber = '';
+  operation = null;
+  updateDisplay();
+};
+
+const deleteNumber = () => {
+  currentNumber = currentNumber.slice(0, -1);
+  updateDisplay();
+};
+
+const appendNumber = (number) => {
+  if (number === '.' && currentNumber.includes('.')) return;
+  currentNumber = currentNumber + number;
+  updateDisplay();
+};
+
+const chooseOperation = (op) => {
+  if (currentNumber === '') return;
+  if (previousNumber !== '') calculate();
+  operation = op;
+  previousNumber = currentNumber;
+  currentNumber = '';
+};
+
+const calculate = () => {
+  let result;
+  const prev = parseFloat(previousNumber);
+  const current = parseFloat(currentNumber);
+  if (isNaN(prev) || isNaN(current)) return;
+  switch (operation) {
+    case '+':
+      result = prev + current;
+      break;
+    case '-':
+      result = prev - current;
+      break;
+    case '*':
+      result = prev * current;
+      break;
+    case '/':
+      if (current === 0) {
+        alert('Cannot divide by zero');
+        return;
+      }
+      result = prev / current;
+      break;
+    default:
+      return;
+  }
+  currentNumber = result;
+  operation = null;
+  previousNumber = '';
+  updateDisplay();
+};
+
+buttons.forEach((button) => {
+  button.addEventListener('click', (e) => {
+    const target = e.target;
+    if (target.matches('button[data-all-clear]')) {
+      clearDisplay();
+    } else if (target.matches('button[data-delete]')) {
+      deleteNumber();
+    } else if (target.matches('button[data-operation]')) {
+      chooseOperation(target.textContent);
+    } else if (target.matches('button[data-equals]')) {
+      calculate();
+    } else if (target.matches('button[data-number]')) {
+      appendNumber(target.textContent);
+    }
+  });
+});
+      </script>
+</body>
+</html>
